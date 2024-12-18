@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'tasks',
 ]
 
 MIDDLEWARE = [
@@ -61,12 +62,19 @@ WSGI_APPLICATION = 'tasktrack.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+import os
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DJANGO_DB_NAME', 'tasktrack_db'),
+        'USER': os.getenv('DJANGO_DB_USER', 'tasktrack_user'),
+        'PASSWORD': os.getenv('DJANGO_DB_PASSWORD', 'password'),
+        'HOST': os.getenv('DJANGO_DB_HOST', 'localhost'),  # Use 'db' when in Docker
+        'PORT': '5432',
     }
 }
+
 
 
 # Password validation
