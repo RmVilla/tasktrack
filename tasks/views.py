@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Task
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from datetime import datetime
 
 @login_required
 def task_list(request):
@@ -24,7 +26,18 @@ def create_task(request):
     if request.method == "POST":
         title = request.POST.get('title')
         description = request.POST.get('description')
-        due_date = request.POST.get('due_date')
+        due_date_str = request.POST.get('due_date')  # Get the string from the form input
+
+        try:
+            # Parse the date string into a datetime object
+            due_date = datetime.strptime(due_date_str, '%Y-%m-%d')  # Adjust the format as needed
+            due_date = timezone.make_aware(due_date)  # Make it timezone-aware
+        except ValueError:
+            # Handle invalid date format (e.g., log the error or display a message)
+            # This is just an example; you could handle the error more gracefully.
+            return render(request, 'tasktrack/create_task.html', {'error': 'Invalid date format'})
+
+        # Create the task with the validated data
         Task.objects.create(
             title=title,
             description=description,
@@ -32,6 +45,7 @@ def create_task(request):
             user=request.user
         )
         return redirect('task_list')
+    
     return render(request, 'tasktrack/create_task.html')
 
 
