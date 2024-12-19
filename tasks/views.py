@@ -2,8 +2,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Task
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
 
 @login_required
 def task_list(request):
@@ -51,16 +49,5 @@ def delete_task(request, task_id):
     task.delete()
     return redirect('task_list')
 
-
-def register(request):
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)  # Log in the user after registration
-            return redirect("task_list")
-    else:
-        form = UserCreationForm()
-    return render(request, "registration/register.html", {"form": form})
 
 
