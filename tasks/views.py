@@ -7,8 +7,18 @@ from django.contrib.auth import login
 
 @login_required
 def task_list(request):
-    tasks = Task.objects.filter(user=request.user)
-    return render(request, "tasktrack/task_list.html", {"tasks": tasks})
+    tasks = Task.objects.all()
+    filter_status = request.GET.get('status')
+
+    if filter_status:
+        tasks = tasks.filter(is_completed=(filter_status == 'completed'))
+
+    return render(request, 'tasktrack/task_list.html', {'tasks': tasks})
+
+
+def task_detail(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    return render(request, 'tasktrack/task_detail.html', {'task': task})
 
 
 @login_required
@@ -52,3 +62,4 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, "registration/register.html", {"form": form})
+
